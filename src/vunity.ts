@@ -1,3 +1,5 @@
+import InputManager from './input-manager';
+
 export class Scene {
     sceneObjects: GameObject[];
     previousFrame: number;
@@ -150,6 +152,28 @@ export class Mover implements GameObjectComponent {
 
     update = (elapsed: number) => {
         this.parent.position.x += this.speed * elapsed;
+    }
+
+    draw = (_: CanvasRenderingContext2D) => {
+
+    }
+}
+
+export class BasicController implements GameObjectComponent {
+    speed: number;
+    shouldRender: false;
+    enabled: true;
+    parent: GameObject;
+
+    constructor(speed: number) {
+        this.speed = speed;
+    }
+
+    update = (elapsed: number) => {
+        if (InputManager.keysPressed.indexOf('Right') > -1)
+            this.parent.position.x += this.speed * elapsed;
+        else if (InputManager.keysPressed.indexOf('Left') > -1)
+            this.parent.position.x -= this.speed * elapsed;
     }
 
     draw = (_: CanvasRenderingContext2D) => {
