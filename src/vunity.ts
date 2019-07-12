@@ -46,6 +46,18 @@ interface Point2D {
     y: number;
 }
 
+interface Size2D {
+    width: number;
+    height: number;
+}
+
+interface Rect2D {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+}
+
 export class GameObject {
     position: Point2D;
     components: GameObjectComponent[];
@@ -73,14 +85,50 @@ export class GameObject {
     }
 }
 
-export class BoxRenderer implements GameObjectComponent {
+export class SpriteRenderer implements GameObjectComponent {
+    shouldRender: true;
+    enabled: true;
+    parent: null;
+
+    image: CanvasImageSource;
+    sourceRect: Rect2D;
+
+    constructor(image: CanvasImageSource, sourceRect: Rect2D) {
+        this.image = image;
+        this.sourceRect = sourceRect;
+    }
 
     update = (elapsed: number) => {
 
     }
 
     draw = (drawingContext: CanvasRenderingContext2D, offset: Point2D) => {
-        drawingContext.fillRect(offset.x, offset.y, 32, 32);
+        drawingContext.drawImage(
+            this.image,
+            this.sourceRect.x,
+            this.sourceRect.y,
+            this.sourceRect.width,
+            this.sourceRect.height,
+            offset.x,
+            offset.y,
+            this.sourceRect.width,
+            this.sourceRect.height);
+    }
+}
+
+export class BoxRenderer implements GameObjectComponent {
+    size: Size2D;
+
+    constructor(size: Size2D) {
+        this.size = size;
+    }
+
+    update = (elapsed: number) => {
+
+    }
+
+    draw = (drawingContext: CanvasRenderingContext2D, offset: Point2D) => {
+        drawingContext.fillRect(offset.x, offset.y, this.size.width, this.size.height);
     }
 
     shouldRender: true;
