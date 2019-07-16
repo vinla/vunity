@@ -33,19 +33,31 @@ function isCollidingA(a: CircleCollider, b: CircleCollider) {
 }
 
 function isCollidingB(a: CircleCollider, b: BoxCollider) {
-    var point = b.parent.position;
-    if (pointInCircle(a.parent.position, a.radius, point))
-        return true;
-    point.y += b.size.height;
-    if (pointInCircle(a.parent.position, a.radius, point))
-        return true;
-    point.x += b.size.width;
-    if (pointInCircle(a.parent.position, a.radius, point))
-        return true;
-    point.y -= b.size.height;
-    if (pointInCircle(a.parent.position, a.radius, point))
-        return true;
-    return false;
+    const circle = {
+        x: a.parent.position.x,
+        y: a.parent.position.y,
+        r: a.radius
+    };
+
+    const rect = {
+        x: b.parent.position.x,
+        y: b.parent.position.y,
+        w: b.size.width,
+        h: b.size.height
+    };
+
+    var distX = Math.abs(circle.x - rect.x - rect.w / 2);
+    var distY = Math.abs(circle.y - rect.y - rect.h / 2);
+
+    if (distX > (rect.w / 2 + circle.r)) { return false; }
+    if (distY > (rect.h / 2 + circle.r)) { return false; }
+
+    if (distX <= (rect.w / 2)) { return true; }
+    if (distY <= (rect.h / 2)) { return true; }
+
+    var dx = distX - rect.w / 2;
+    var dy = distY - rect.h / 2;
+    return (dx * dx + dy * dy <= (circle.r * circle.r));
 }
 
 function pointInCircle(origin: Point2D, radius: number, point: Point2D) {

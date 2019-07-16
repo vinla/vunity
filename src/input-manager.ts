@@ -17,9 +17,10 @@ class InputManager {
                 case 37:
                     this.keysPressed.push('Left');
                     break;
-                case 'Space':
+                case ' ':
                 case 32:
                     this.keysPressed.push('Space');
+                    break;
             }
         };
 
@@ -34,9 +35,10 @@ class InputManager {
                 case 37:
                         this.keysPressed.splice(this.keysPressed.indexOf('Left'));
                     break;
-                case 'Space':
+                case ' ':
                 case 32:
                     this.keysPressed.splice(this.keysPressed.indexOf('Space'));
+                    break;
             }
         };
     }

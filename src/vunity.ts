@@ -27,6 +27,9 @@ export class Scene {
         context.clearRect(0, 0, this.canvas.width, this.canvas.height);
         if (!this.previousFrame) this.previousFrame = timestamp;
         const elapsed = (timestamp - this.previousFrame) / 1000;
+
+        this.sceneObjects = this.sceneObjects.filter(obj => !obj.destroyed);
+
         this.sceneObjects.forEach(go => {
             go.update(elapsed);
         });
@@ -54,11 +57,13 @@ export class GameObject {
     components: GameObjectComponent[];
     collider?: Collider;
     collidedWith: GameObject[];
+    destroyed: boolean;
 
     constructor(position: Point2D) {
         this.position = position;
         this.components = [] as GameObjectComponent[];
         this.collidedWith = [] as GameObject[];
+        this.destroyed = false;
     }
 
     addComponent = (component: GameObjectComponent) => {
