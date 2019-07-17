@@ -111,9 +111,11 @@ export interface AnimationFrame {
 
 export class BoxRenderer implements GameObjectComponent {
     size: Size2D;
+    colorCode: string;
 
-    constructor(size: Size2D) {
+    constructor(size: Size2D, colorCode: string) {
         this.size = size;
+        this.colorCode = colorCode;
     }
 
     update = (elapsed: number) => {
@@ -121,6 +123,7 @@ export class BoxRenderer implements GameObjectComponent {
     }
 
     draw = (drawingContext: CanvasRenderingContext2D, offset: Point2D) => {
+        drawingContext.fillStyle = this.colorCode;
         drawingContext.fillRect(offset.x, offset.y, this.size.width, this.size.height);
     }
 

@@ -1,5 +1,6 @@
 import { GameObjectComponent, GameObject } from './vunity';
 import { BoxCollider } from './colliders';
+import { Point2D } from './utility';
 
 export class PlatformController implements GameObjectComponent {
     parent: GameObject;
@@ -13,6 +14,10 @@ export class PlatformController implements GameObjectComponent {
     }
 
     handleCollision = (collider: GameObject) => {
+
+        if (collider.state['layer'] !== 'platform')
+            return;
+
         if (collider.position.y > this.parent.position.y) {
             // Collider is below the player so adjust position up
             const box = collider.collider as BoxCollider;
@@ -23,12 +28,17 @@ export class PlatformController implements GameObjectComponent {
     }
 }
 
-export class DeathPlane implements GameObjectComponent {
+export class ResetOnTouch implements GameObjectComponent {
     parent: GameObject;
+    point: Readonly<Point2D>;
+
+    constructor(point: Point2D) {
+        this.point = point;
+    }
 
     handleCollision = (collider: GameObject) => {
         if (collider.state['isPlayer']) {
-            collider.position = {x: 32, y: 32};
+            collider.position = this.point;
         }
     }
 }
