@@ -37,6 +37,11 @@ export class Scene {
         this.sceneObjects.forEach(go => {
             go.draw(context);
         });
+
+        this.sceneObjects.forEach(go => {
+            go.lateUpdate(elapsed);
+        });
+
         this.previousFrame = timestamp;
         window.requestAnimationFrame(this.frame);
     }
@@ -44,11 +49,10 @@ export class Scene {
 
 export interface GameObjectComponent {
     parent: GameObject;
-    update: (elapsed: number) => void;
-    draw: (drawingContext: CanvasRenderingContext2D, offset: Point2D) => void;
+    update?: (elapsed: number) => void;
+    draw?: (drawingContext: CanvasRenderingContext2D, offset: Point2D) => void;
     handleCollision?: (collider: GameObject) => void;
-    enabled: boolean;
-    shouldRender: boolean;
+    lateUpdate?: (elapsed: number) => void;
 }
 
 export class GameObject {
@@ -58,12 +62,14 @@ export class GameObject {
     collider?: Collider;
     collidedWith: GameObject[];
     destroyed: boolean;
+    state: {[index: string]: any};
 
     constructor(position: Point2D) {
         this.position = position;
         this.components = [] as GameObjectComponent[];
         this.collidedWith = [] as GameObject[];
         this.destroyed = false;
+        this.state = {};
     }
 
     addComponent = (component: GameObjectComponent) => {
@@ -78,10 +84,6 @@ export class GameObject {
             this.collidedWith = this.collidedWith.concat(colls);
         }
 
-        this.components.forEach(component => {
-            component.update(elapsed);
-        });
-
         if (this.collidedWith.length > 0) {
             this.components.forEach(component => {
                 if (component.handleCollision) {
@@ -90,10 +92,18 @@ export class GameObject {
             });
             this.collidedWith = [] as GameObject[];
         }
+
+        this.components.filter(c => c.update).forEach(component => {
+            component.update(elapsed);
+        });
+    }
+
+    lateUpdate = (elapsed: number) => {
+        this.components.filter(c => c.lateUpdate).forEach(c => c.lateUpdate(elapsed));
     }
 
     draw = (drawingContext: CanvasRenderingContext2D) => {
-        this.components.forEach(component => {
+        this.components.filter(c => c.draw).forEach(component => {
             component.draw(drawingContext, this.position);
         });
     }
@@ -104,12 +114,8 @@ export class GameObject {
     }
 }
 
-
-
 export class Mover implements GameObjectComponent {
     velocity: Point2D;
-    shouldRender: false;
-    enabled: true;
     parent: GameObject;
 
     constructor(velocity: Point2D) {
@@ -119,9 +125,5 @@ export class Mover implements GameObjectComponent {
     update = (elapsed: number) => {
         this.parent.position.x += this.velocity.x * elapsed;
         this.parent.position.y += this.velocity.y * elapsed;
-    }
-
-    draw = (_: CanvasRenderingContext2D) => {
-
     }
 }

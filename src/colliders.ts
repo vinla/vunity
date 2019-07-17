@@ -32,6 +32,29 @@ function isCollidingA(a: CircleCollider, b: CircleCollider) {
     return distance < a.radius + b.radius;
 }
 
+function isCollidingC(a: BoxCollider, b: BoxCollider) {
+    const targetA = {
+        x: a.parent.position.x,
+        y: a.parent.position.y,
+        w: a.size.width,
+        h: a.size.height
+    };
+
+    const targetB = {
+        x: b.parent.position.x,
+        y: b.parent.position.y,
+        w: b.size.width,
+        h: b.size.height
+    };
+
+    const check = (targetB.x > (targetA.x + targetA.w) ||
+           (targetB.x + targetB.w) < targetA.x ||
+           targetB.y > (targetA.y + targetA.h) ||
+           (targetB.y + targetB.h) < targetA.y);
+
+    return !check;
+}
+
 function isCollidingB(a: CircleCollider, b: BoxCollider) {
     const circle = {
         x: a.parent.position.x,
@@ -75,7 +98,18 @@ export class BoxCollider implements Collider {
     }
 
     checkCollision = (targets: GameObject[]) => {
-        return [] as GameObject[];
+        var hits = [] as GameObject[];
+        targets.forEach(go => {
+            if (go.collider) {
+                if (go.collider.type === 'circle' && isCollidingB(go.collider as CircleCollider, this)) {
+                    hits.push(go);
+                }
+                else if (go.collider.type === 'box' && isCollidingC(this, go.collider as BoxCollider)) {
+                    hits.push(go);
+                }
+            }
+        });
+        return hits;
     }
 }
 

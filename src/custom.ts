@@ -9,10 +9,12 @@ export class BasicController implements GameObjectComponent {
     enabled: true;
     parent: GameObject;
     cooldown: number;
+    jumpForce: number;
 
     constructor(speed: number) {
         this.speed = speed;
         this.cooldown = 0;
+        this.jumpForce = 0;
     }
 
     update = (elapsed: number) => {
@@ -20,22 +22,25 @@ export class BasicController implements GameObjectComponent {
             this.parent.position.x += this.speed * elapsed;
         else if (InputManager.keysPressed.indexOf('Left') > -1)
             this.parent.position.x -= this.speed * elapsed;
-        else if (InputManager.keysPressed.indexOf('Space') > -1 && this.cooldown <= 0) {
-            var bullet = new GameObject({...this.parent.position});
-            bullet.addComponent(new EllipseRenderer({width: 4, height: 4}));
-            bullet.addComponent(new Mover({x: 0, y: -50}));
-            bullet.addComponent(new BulletController());
-            bullet.collider = new CircleCollider(bullet, 4);
-            this.parent.scene.addObject(bullet);
-            this.cooldown = .5;
+
+        if (InputManager.keysPressed.indexOf('Space') > -1 && this.parent.state['grounded']) {
+            this.jumpForce = 1;
+            // var bullet = new GameObject({...this.parent.position});
+            // bullet.addComponent(new EllipseRenderer({width: 4, height: 4}));
+            // bullet.addComponent(new Mover({x: 0, y: -50}));
+            // bullet.addComponent(new BulletController());
+            // bullet.collider = new CircleCollider(bullet, 4);
+            // this.parent.scene.addObject(bullet);
+            // this.cooldown = .5;
+        }
+
+        if (this.jumpForce > 0) {
+            this.parent.position.y -= this.jumpForce * 250 * elapsed;
+            this.jumpForce -= elapsed;
         }
 
         if (this.cooldown > 0)
             this.cooldown -= elapsed;
-    }
-
-    draw = (_: CanvasRenderingContext2D) => {
-
     }
 }
 
@@ -44,14 +49,6 @@ export class BulletController implements GameObjectComponent {
     enabled: true;
     parent: GameObject;
     speed: number;
-
-    update = (elapsed: number) => {
-
-    }
-
-    draw = (_: CanvasRenderingContext2D) => {
-
-    }
 
     handleCollision = (collider: GameObject) => {
         collider.destroyed = true;
