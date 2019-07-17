@@ -42,3 +42,13 @@ export class ResetOnTouch implements GameObjectComponent {
         }
     }
 }
+
+export class GoalOnTouch implements GameObjectComponent {
+    parent: GameObject;
+
+    handleCollision = (collider: GameObject) => {
+        if (collider.state['isPlayer']) {
+            alert('Well done, you have beat the game!');
+        }
+    }
+}
