@@ -56,6 +56,7 @@ export interface GameObjectComponent {
 }
 
 export class GameObject {
+    parent?: GameObject;
     scene: Scene;
     position: Point2D;
     components: GameObjectComponent[];
@@ -75,6 +76,15 @@ export class GameObject {
     addComponent = (component: GameObjectComponent) => {
         component.parent = this;
         this.components.push(component);
+    }
+
+    getPosition = (): Point2D => {
+        if (this.parent) {
+            const parentPosition = this.parent.getPosition();
+            return {x: parentPosition.x + this.position.x, y: parentPosition.y + this.position.y};
+        }
+
+        return this.position;
     }
 
     update = (elapsed: number) => {

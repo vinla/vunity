@@ -21,6 +21,10 @@ class InputManager {
                 case 32:
                     this.keysPressed.push('Space');
                     break;
+                case 'a':
+                case 16:
+                    this.keysPressed.push('Shoot');
+                    break;
             }
         };
 
@@ -38,6 +42,10 @@ class InputManager {
                 case ' ':
                 case 32:
                     this.keysPressed.splice(this.keysPressed.indexOf('Space'));
+                    break;
+                case 'a':
+                case 16:
+                    this.keysPressed.splice(this.keysPressed.indexOf('Shoot'));
                     break;
             }
         };
